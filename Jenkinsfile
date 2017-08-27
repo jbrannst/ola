@@ -4,7 +4,7 @@ node('maven') {
    checkout scm
    stage ('Build') {
       sh "oc new-build --binary --name=ola -l app=ola"
-      sh "${mvnCmd} package"
+      sh "${mvnCmd} package -DskipTests"
    }
 
    stage ('Test and Analysis') {
