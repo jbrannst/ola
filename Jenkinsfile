@@ -26,7 +26,7 @@ node('maven') {
 
    stage ('Deploy TEST') {
       sh "oc start-build ola --from-dir=. --wait"
-      sh "oc new-app ola --name=ola-test -l app=ola,app=ola-test,hystrix.enabled=true
+      sh "oc new-app ola --name=ola-test -l app=ola,app=ola-test,hystrix.enabled=true"
    }
    
    stage ('Smoke tests') {
@@ -57,7 +57,7 @@ node('maven') {
      echo "Deploying to ${TARGET}"
      
      //deploy("ola-${TARGET}", "${VERSION}")
-     sh "oc new-app ola:${VERSION} --name=ola-${TARGET} -l app=ola,app=ola-${TARGET},hystrix.enabled=true
+     sh "oc new-app ola:${VERSION} --name=ola-${TARGET} -l app=ola,app=ola-${TARGET},hystrix.enabled=true"
      verify("ola-${TARGET}")
      sh "oc process -f bluegreen-route-template.yaml -p  APPLICATION_INSTANCE=${TARGET} APPLICATION_NAME=ola | oc apply -f - "
    }
