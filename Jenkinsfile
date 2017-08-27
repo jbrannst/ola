@@ -48,6 +48,9 @@ node('maven') {
    }
    
    stage ('Activate'){
+     timeout(time:5, unit:'MINUTES') {
+        input message: "Activate in PROD?", ok: "Activate"
+     }
      sh "oc process -f bluegreen-route-template.yaml -p  APPLICATION_INSTANCE=${TARGET} APPLICATION_NAME=ola | oc apply -f - "
    }
 }
