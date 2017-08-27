@@ -3,7 +3,7 @@ node('maven') {
 
    checkout scm
    stage ('Build') {
-      sh "oc new-build --binary --image-stream=openshift/redhat-openjdk18:1.1 --name=ola -l app=ola || true"
+      sh "oc new-build --binary --image-stream=openshift/redhat-openjdk18-openshift:1.1 --name=ola -l app=ola || true"
       sh "${mvnCmd} package -DskipTests"
    }
 
