@@ -5,7 +5,7 @@ node('maven') {
    stage ('Build') {
       sh "clean install -DskipTests=true"
       sh "oc new-build --binary --name=ola -l app=ola"
-      sh "{mvnCmd} package"
+      sh "${mvnCmd} package"
    }
 
    stage ('Test and Analysis') {
