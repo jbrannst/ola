@@ -3,7 +3,7 @@ node('maven') {
 
    checkout scm
    stage ('Build') {
-      sh "oc new-build --binary --name=ola -l app=ola"
+      sh "oc new-build --binary --name=ola -l app=ola || true"
       sh "${mvnCmd} package -DskipTests"
    }
 
