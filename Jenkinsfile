@@ -1,6 +1,5 @@
 node('maven') {
    def mvnCmd = "mvn"
-   def NAMESPACE = params.NAMESPACE == null ? "demo" : params.NAMESPACE
 
    checkout scm
    stage ('Build') {
@@ -30,7 +29,7 @@ node('maven') {
    }
    
    stage ('Smoke tests') {
-      verify("ola-test.${NAMESPACE}")
+      verify("ola-test")
      // further tests..
    }
 
@@ -60,11 +59,11 @@ node('maven') {
 
      
      sh "oc new-app ola:${TARGET} --name=ola-${TARGET} -l app=ola,app=ola-${TARGET},hystrix.enabled=true || true"
-     verify("ola-${TARGET}.${NAMESPACE}")
+     verify("ola-${TARGET}")
      sh "oc process -f bluegreen-route-template.yaml -p  APPLICATION_INSTANCE=${TARGET} APPLICATION_NAME=ola | oc apply -f - "
    }
 }
 def verify(application) {
   openshiftVerifyDeployment(deploymentConfig: "${application}")
-  sh "curl http://${application}.svc.cluster.local:8080/api/health | grep \"ok\""
+  sh "curl http://${application}:8080/api/health | grep \"ok\""
 }
