@@ -21,10 +21,10 @@
       jenkinsPipelineStrategy:
         jenkinsfilePath: Jenkinsfile
         env:
-        - name: "TEST_PROJECT_PARAM"
-          value: "test_var"
-        - name: "PROD_PROJECT_PARAM"
-          value: "prod_var"
+        - name: "NAMESPACE"
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
     output: {}
     resources: {}
     postCommit: {}
