@@ -1,6 +1,6 @@
 # Pipeline
-apiVersion: v1
   kind: BuildConfig
+  apiVersion: v1
   metadata:
     labels:
       app: cicd-pipeline
