@@ -1,27 +1,12 @@
 node('maven') {
    def mvnCmd = "mvn"
+   def TARGET = "blue"
 
    checkout scm
    stage ('Build') {
       sh "oc new-build --binary --image-stream=openshift/redhat-openjdk18-openshift:1.1 --name=ola -l app=ola || true"
       sh "${mvnCmd} package -DskipTests"
    }
-
-   //stage ('Test and Analysis') {
-   //  parallel (
-   //      'Test': {
-   //         sh "${mvnCmd} test"
-   //         step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
-   //      },
-   //      'Static Analysis': {
-   //         sh "${mvnCmd} sonar:sonar -Dsonar.host.url=http://sonarqube:9000 -DskipTests=true"
-   //      }
-   //  )
-   //}
-
-   //stage ('Push to Nexus') {
-   // sh "${mvnCmd} deploy -DskipTests=true"
-   //}
 
    stage ('Deploy TEST') {
       sh "mkdir -p ./target/oc-build/deployments/; mv -f target/ola.jar ./target/oc-build/deployments/"
@@ -36,9 +21,6 @@ node('maven') {
    }
 
    stage ('Deploy PROD') {
-     //timeout(time:5, unit:'MINUTES') {
-     //   input message: "Promote to PROD?", ok: "Promote"
-     //}
      
      // generate tag for production using the unique commit hash
      REVISION =  sh ( 
@@ -63,6 +45,9 @@ node('maven') {
      sh "oc new-app ola:${TARGET} --name=ola-${TARGET} -l app=ola,app=ola-${TARGET},hystrix.enabled=true || true"
      sh "oc set probe dc/ola-${TARGET} --readiness --get-url=http://:8080/api/health"
      verify("ola-${TARGET}")
+   }
+   
+   stage ('Activate'){
      sh "oc process -f bluegreen-route-template.yaml -p  APPLICATION_INSTANCE=${TARGET} APPLICATION_NAME=ola | oc apply -f - "
    }
 }
