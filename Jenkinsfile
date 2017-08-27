@@ -37,7 +37,7 @@ node('maven') {
 
    stage ('Deploy PROD') {
      //timeout(time:5, unit:'MINUTES') {
-     //   input message: "Promote to PROD?", ok: "Promote" 
+     //   input message: "Promote to PROD?", ok: "Promote"
      //}
      
      // generate tag for production using the unique commit hash
