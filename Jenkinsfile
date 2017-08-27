@@ -7,17 +7,17 @@ node('maven') {
       sh "${mvnCmd} package -DskipTests"
    }
 
-   stage ('Test and Analysis') {
-     parallel (
-         'Test': {
-            sh "${mvnCmd} test"
-            step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
-         //},
-         //'Static Analysis': {
-         //   sh "${mvnCmd} sonar:sonar -Dsonar.host.url=http://sonarqube:9000 -DskipTests=true"
-         }
-     )
-   }
+   //stage ('Test and Analysis') {
+   //  parallel (
+   //      'Test': {
+   //         sh "${mvnCmd} test"
+   //         step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
+   //      },
+   //      'Static Analysis': {
+   //         sh "${mvnCmd} sonar:sonar -Dsonar.host.url=http://sonarqube:9000 -DskipTests=true"
+   //      }
+   //  )
+   //}
 
    //stage ('Push to Nexus') {
    // sh "${mvnCmd} deploy -DskipTests=true"
