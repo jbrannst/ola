@@ -4,13 +4,15 @@ node('maven') {
 
    checkout scm
    stage ('Build') {
-      sh "oc new-build --binary --image-stream=openshift/redhat-openjdk18-openshift:1.1 --name=ola -l app=ola || true"
+      //sh "oc new-build --binary --image-stream=openshift/redhat-openjdk18-openshift:1.1 --name=ola -l app=ola || true"
+      sh "oc new-build --binary --name=ola -l app=ola || true"
       sh "${mvnCmd} package -DskipTests"
    }
 
    stage ('Deploy TEST') {
-      sh "mkdir -p ./target/oc-build/deployments/; mv -f target/ola.jar ./target/oc-build/deployments/"
-      sh "oc start-build ola --from-dir=./target/oc-build/ --wait"
+      //sh "mkdir -p ./target/oc-build/deployments/; mv -f target/ola.jar ./target/oc-build/deployments/"
+      //sh "oc start-build ola --from-dir=./target/oc-build/ --wait"
+      sh "oc start-build ola --from-dir=. --wait"
       sh "oc new-app ola --name=ola-test -l app=ola,app=ola-test,hystrix.enabled=true || oc deploy ola-test"
       sh "oc set probe dc/ola-test --readiness --get-url=http://:8080/api/health"
    }
