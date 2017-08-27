@@ -1,0 +1,33 @@
+# Pipeline
+apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    labels:
+      app: cicd-pipeline
+      name: cicd-pipeline
+    name: cicd-pipeline
+    annotations:
+      pipeline.alpha.openshift.io/uses: '[{"name": "jenkins", "namespace": "", "kind": "DeploymentConfig"}]'
+  spec:
+    triggers: {}
+    runPolicy: Serial
+    source:
+      type: Git
+      git:
+        uri: 'http://github.com/jbrannst/ola.git'
+        ref: master
+    strategy:
+      type: JenkinsPipeline
+      jenkinsPipelineStrategy:
+        jenkinsfilePath: Jenkinsfile
+        env:
+        - name: "TEST_PROJECT_PARAM"
+          value: "${TEST_PROJECT}"
+        - name: "PROD_PROJECT_PARAM"
+          value: "${PROD_PROJECT}"
+    output: {}
+    resources: {}
+    postCommit: {}
+    nodeSelector: {}
+  status:
+    lastVersion: 1
