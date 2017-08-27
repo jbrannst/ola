@@ -24,7 +24,7 @@ node('maven') {
    //}
 
    stage ('Deploy TEST') {
-      sh "mkdir -p ./target/oc-build/deployments/; mv -f target/ola.jar $_mv"
+      sh "mkdir -p ./target/oc-build/deployments/; mv -f target/ola.jar \$_mv"
       sh "oc start-build ola --from-dir=./target/oc-build/ --wait"
       sh "oc new-app ola --name=ola-test -l app=ola,app=ola-test,hystrix.enabled=true || oc deploy ola-test"
       sh "oc set probe dc/ola-test --readiness --get-url=http://:8080/api/health"
