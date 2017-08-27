@@ -24,8 +24,9 @@ node('maven') {
    //}
 
    stage ('Deploy TEST') {
-      sh "oc start-build ola --from-dir=. --wait"
+      sh "oc start-build ola --from-file=target/ola.jar --wait"
       sh "oc new-app ola --name=ola-test -l app=ola,app=ola-test,hystrix.enabled=true || oc deploy ola-test"
+      sh "oc set probe dc/ola-test --readiness --get-url=http://:8080/api/health"
    }
    
    stage ('Smoke tests') {
@@ -59,6 +60,7 @@ node('maven') {
 
      
      sh "oc new-app ola:${TARGET} --name=ola-${TARGET} -l app=ola,app=ola-${TARGET},hystrix.enabled=true || true"
+     sh "oc set probe dc/ola-${TARGET} --readiness --get-url=http://:8080/api/health"
      verify("ola-${TARGET}")
      sh "oc process -f bluegreen-route-template.yaml -p  APPLICATION_INSTANCE=${TARGET} APPLICATION_NAME=ola | oc apply -f - "
    }
