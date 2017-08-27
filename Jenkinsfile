@@ -3,7 +3,6 @@ node('maven') {
 
    checkout scm
    stage ('Build') {
-      sh "clean install -DskipTests=true"
       sh "oc new-build --binary --name=ola -l app=ola"
       sh "${mvnCmd} package"
    }
