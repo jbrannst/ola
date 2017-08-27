@@ -50,7 +50,7 @@ node('maven') {
      
      // check if blue deployment is active
      BLUE_ACTIVE =  sh ( 
-        script: "oc get route production | grep ola-blue", 
+        script: "oc get route ola | grep ola-blue", 
         returnStatus: true 
      ) == 0
       
