@@ -22,9 +22,9 @@ apiVersion: v1
         jenkinsfilePath: Jenkinsfile
         env:
         - name: "TEST_PROJECT_PARAM"
-          value: "${TEST_PROJECT}"
+          value: "test_var"
         - name: "PROD_PROJECT_PARAM"
-          value: "${PROD_PROJECT}"
+          value: "prod_var"
     output: {}
     resources: {}
     postCommit: {}
