@@ -1,5 +1,6 @@
 node('maven') {
    def mvnCmd = "mvn"
+   def NAMESPACE = params.NAMESPACE == null ? "demo" : params.NAMESPACE
 
    checkout scm
    stage ('Build') {
@@ -25,11 +26,11 @@ node('maven') {
 
    stage ('Deploy TEST') {
       sh "oc start-build ola --from-dir=. --wait"
-      sh "oc new-app ola --name=ola-test -l app=ola,app=ola-test,hystrix.enabled=true"
+      sh "oc new-app ola --name=ola-test -l app=ola,app=ola-test,hystrix.enabled=true || oc deploy ola-test"
    }
    
    stage ('Smoke tests') {
-     verify("ola-test")
+      verify("ola-test.${NAMESPACE}")
      // further tests..
    }
 
@@ -39,10 +40,11 @@ node('maven') {
      //}
      
      // generate tag for production using the unique commit hash
-     VERSION =  sh ( 
+     REVISION =  sh ( 
         script: "git rev-parse --short=12 HEAD", 
         returnStdout: true 
      ).trim()
+     VERSION = "${REVISION}_${env.BUILD_NUMBER}"
      sh "oc tag ola:latest ola:${VERSION}"
      
      // check if blue deployment is active
@@ -50,14 +52,15 @@ node('maven') {
         script: "oc get route production | grep ola-blue", 
         returnStatus: true 
      ) == 0
-     
+      
      // deploy to passive
      TARGET = BLUE_ACTIVE ? "green" : "blue"
      echo "Deploying to ${TARGET}"
+     sh "oc tag ola:${VERSION} ola:${TARGET}"
+
      
-     //deploy("ola-${TARGET}", "${VERSION}")
-     sh "oc new-app ola:${VERSION} --name=ola-${TARGET} -l app=ola,app=ola-${TARGET},hystrix.enabled=true"
-     verify("ola-${TARGET}")
+     sh "oc new-app ola:${TARGET} --name=ola-${TARGET} -l app=ola,app=ola-${TARGET},hystrix.enabled=true || true"
+     verify("ola-${TARGET}.${NAMESPACE}")
      sh "oc process -f bluegreen-route-template.yaml -p  APPLICATION_INSTANCE=${TARGET} APPLICATION_NAME=ola | oc apply -f - "
    }
 }
