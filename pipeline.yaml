@@ -9,7 +9,13 @@
     annotations:
       pipeline.alpha.openshift.io/uses: '[{"name": "jenkins", "namespace": "", "kind": "DeploymentConfig"}]'
   spec:
-    triggers: {}
+    triggers:
+      - type: GitHub
+        github:
+          secret: abc
+      - type: Generic
+        generic:
+          secret: abc
     runPolicy: Serial
     source:
       type: Git
